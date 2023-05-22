@@ -58,7 +58,7 @@ const getNewUsers = async (res) => {
       await page.click('.login__form_action_container button');
       await page.waitForTimeout(3000);
       // await page.screenshot({ path: 'src/linkedin/screenshot3.png' });
-      await page.waitForSelector(['.reusable-search__result-container']);
+      await page.waitForSelector('.reusable-search__result-container');
 
       // START SAVE ALL URLS ------------------------------------------------------------------------------------------------------------------------------------------
       let count = 0;

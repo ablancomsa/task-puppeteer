@@ -17,6 +17,12 @@ const getNewUsers = async (res) => {
       browser = await puppeteer.launch({
           headless: true,
           ignoreHTTPSErrors: true,
+          args: [
+            "--disable-setuid-sandbox",
+            "--no-sandbox",
+            "--single-process",
+            "--no-zygote",
+          ],
 
       });
       const page = await browser.newPage();

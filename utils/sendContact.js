@@ -49,15 +49,14 @@ const sendContact = async (userData, auth) => {
       // And save this data to a JSON file
       fs.writeFileSync('httpbin-cookies.json', cookieJson);
     }else{
-      console.log('entro en saved')
       // Saved cookies reading
       const cookies = fs.readFileSync('./utils/httpbin-cookies.json', 'utf8');
-      console.log('cookies: ', cookies)
       const deserializedCookies = JSON.parse(cookies);
-      console.log('deserializedCookies: ', deserializedCookies)
       await page.setCookie(...deserializedCookies);
       console.log('setCookies')
       await page.goto(`https://${userData.linkedin}`);
+      console.log('goto')
+    
     }
   }catch(error){
     console.log('Log In')
@@ -65,7 +64,8 @@ const sendContact = async (userData, auth) => {
     authenticated = 'not authenticated';
   }
   try{
-
+    console.log('Contact')
+    await page.waitForSelector(`.pv-top-card-v2-contact-info`);
     await page.waitForTimeout(2000);
     await page.waitForSelector(`.pv-top-card-v2-ctas`);
     const div = await page.$eval(`.pv-top-card-v2-ctas >>>> button`, el => el.innerText);

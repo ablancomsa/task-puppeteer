@@ -54,7 +54,7 @@ const sendContact = async (userData, auth) => {
       const deserializedCookies = JSON.parse(cookies);
       await page.setCookie(...deserializedCookies);
       console.log('setCookies')
-      console.log(userData)
+      console.log(userData.linkedin)
       await page.goto(`https://${userData.linkedin}`);
       console.log('goto')
     

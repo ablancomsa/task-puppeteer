@@ -1,5 +1,6 @@
 const puppeteer = require("puppeteer");
 const randomUseragent = require("random-useragent");
+const fs = require('fs');
 require("dotenv").config();
 
 
@@ -31,6 +32,7 @@ const scrapeLogic = async (res) => {
 
     await page.goto("https://developer.chrome.com/");
     console.log('go to page')
+  
 
     //await page.waitForNavigation({ waitUntil: 'domcontentloaded' });
     console.log('got selector')

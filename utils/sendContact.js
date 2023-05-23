@@ -32,9 +32,10 @@ const sendContact = async (userData, auth) => {
 
   try {
     if (auth === 'not authenticated') {
+      console.log(auth)
       await page.goto('https://www.linkedin.com/login');
-      await page.type('#username', 'msadeveloper@yahoo.com');
-      await page.type('#password', 'proyectolinkedin');
+      await page.type('#username', userData.email);
+      await page.type('#password', userData.password);
       await page.waitForTimeout(3000);
       await page.click('button[data-litms-control-urn="login-submit"]');
       await page.waitForTimeout(3000);
@@ -48,10 +49,14 @@ const sendContact = async (userData, auth) => {
       // And save this data to a JSON file
       fs.writeFileSync('httpbin-cookies.json', cookieJson);
     }else{
+      console.log('entro en saved')
       // Saved cookies reading
       const cookies = fs.readFileSync('./utils/httpbin-cookies.json', 'utf8');
+      console.log('cookies: ', cookies)
       const deserializedCookies = JSON.parse(cookies);
+      console.log('deserializedCookies: ', deserializedCookies)
       await page.setCookie(...deserializedCookies);
+      console.log('setCookies')
       await page.goto(`https://${userData.linkedin}`);
     }
   }catch(error){

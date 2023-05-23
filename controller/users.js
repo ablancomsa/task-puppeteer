@@ -45,9 +45,6 @@ userRouter.post('/users/:id', async (request, response) => {
     isContact: true
   }
 
-  console.log("person: ",person)
-  console.log("new user to add: ",newUserToAdd);
-
   try {
     const send = await sendContact(person, auth);
     if (send) {

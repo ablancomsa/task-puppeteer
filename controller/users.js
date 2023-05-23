@@ -2,6 +2,7 @@ const userRouter = require('express').Router();
 const User = require('../models/user');
 const {getNewUsers} = require('../utils/searcher')
 const {sendContact} = require('../utils/sendContact')
+const {scrapeLogic} = require('../utils/scrapeLogic')
 
 userRouter.get('/newusers', async (request, response) => {
   try {
@@ -20,6 +21,10 @@ userRouter.get('/newusers', async (request, response) => {
       response.status(500).json('error')
       console.log(error);
   }
+})
+
+userRouter.get('/scrape', async (request, response) => {
+  scrapeLogic(response)
 })
 
 userRouter.post('/users/:id', async (request, response) => {

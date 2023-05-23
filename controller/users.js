@@ -11,7 +11,6 @@ userRouter.get('/newusers', async (request, response) => {
       password: request.query.password,
       auth: request.query.auth
     }
-    console.log(userData);
 
     const data = await getNewUsers(userData)
 
@@ -50,9 +49,11 @@ userRouter.post('/users/:id', async (request, response) => {
   console.log("new user to add: ",newUserToAdd);
 
   try {
-    await sendContact(person, auth);
-    await User.findByIdAndUpdate(request.params.id, {$set: newUserToAdd}, {new: true});
-    response.status(200).json(newUserToAdd);
+    const send = await sendContact(person, auth);
+    if (send) {
+      await User.findByIdAndUpdate(request.params.id, {$set: newUserToAdd}, {new: true});
+      response.status(200).json(newUserToAdd);
+    }
   }
   catch (error) {
     console.log(error)

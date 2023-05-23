@@ -3,7 +3,7 @@ const randomUseragent = require('random-useragent');
 const fs = require('fs');
 
 const sendContact = async (userData, auth) => {
-
+  let err;
   let page;
   
   const header = randomUseragent.getRandom((ua) => {
@@ -12,9 +12,18 @@ const sendContact = async (userData, auth) => {
   console.log(header)
   
   const browser = await puppeteer.launch({
-    headless: false,
+    headless: true,
     ignoreHTTPSErrors: true,
-    args: ['--disable-features=IsolateOrigins']
+    args: [
+      "--disable-setuid-sandbox",
+      "--no-sandbox",
+      "--single-process",
+      "--no-zygote",
+    ],
+    executablePath:
+      process.env.NODE_ENV === "production"
+        ? process.env.PUPPETEER_EXECUTABLE_PATH
+        : puppeteer.executablePath(),
     
   });
   page = (await browser.pages())[0];
@@ -29,7 +38,6 @@ const sendContact = async (userData, auth) => {
       await page.waitForTimeout(3000);
       await page.click('button[data-litms-control-urn="login-submit"]');
       await page.waitForTimeout(3000);
-      console.log(userData.linkedin)
       await page.goto(`https://${userData.linkedin}`);
 
       await page.waitForTimeout(3000);
@@ -39,16 +47,11 @@ const sendContact = async (userData, auth) => {
       
       // And save this data to a JSON file
       fs.writeFileSync('httpbin-cookies.json', cookieJson);
-      console.log('Cookies saved to httpbin-cookies.json', cookieJson);
     }else{
       // Saved cookies reading
-      console.log('entro al else')
       const cookies = fs.readFileSync('./utils/httpbin-cookies.json', 'utf8');
-      console.log('cookies', cookies);
       const deserializedCookies = JSON.parse(cookies);
-      console.log('deserializedCookies', deserializedCookies);
       await page.setCookie(...deserializedCookies);
-      console.log('set cookie', deserializedCookies);
       await page.goto(`https://${userData.linkedin}`);
     }
   }catch(error){
@@ -56,15 +59,28 @@ const sendContact = async (userData, auth) => {
     console.log(error)
     authenticated = 'not authenticated';
   }
-  await page.waitForTimeout(3000);
-  await page.waitForSelector(`.pv-top-card-v2-ctas >>> button`);
-  const div = await page.$(`.pv-top-card-v2-ctas >>> button`);
-  console.log(div);
-  await page.click(`.pv-top-card-v2-ctas >>> button`);
-  await page.waitForTimeout(3000);
-  await page.close()
+  try{
 
-  return true
+    await page.waitForTimeout(2000);
+    await page.waitForSelector(`.pv-top-card-v2-ctas`);
+    const div = await page.$eval(`.pv-top-card-v2-ctas >>>> button`, el => el.innerText);
+    console.log(div)
+    await page.click(".pv-top-card-v2-ctas >>>> button");
+    await page.waitForTimeout(2000);
+    await page.waitForSelector('#artdeco-modal-outlet')
+    console.log('Open Modal')
+    const button = await page.$$eval(`#artdeco-modal-outlet >>>> button`, el => el[0].outerHTML);
+    console.log('Elemento a clickear: ',button)
+    await page.click(`#artdeco-modal-outlet >>>> button`);
+    await page.waitForTimeout(2000);
+    await page.close()
+  
+    return true
+  } catch(error){
+    err = true
+    console.log(error)
+    return false
+  }
+
 }
-
 module.exports = {sendContact};

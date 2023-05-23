@@ -17,7 +17,7 @@ const getNewUsers = async (userData) => {
         });
         
         browser = await puppeteer.launch({
-            headless: false,
+            headless: true,
             ignoreHTTPSErrors: true,
             args: [
                 "--disable-setuid-sandbox",
@@ -25,7 +25,10 @@ const getNewUsers = async (userData) => {
                 "--single-process",
                 "--no-zygote",
             ],
-            
+            executablePath:
+                process.env.NODE_ENV === "production"
+                    ? process.env.PUPPETEER_EXECUTABLE_PATH
+                    : puppeteer.executablePath(),
         });
         page = (await browser.pages())[0];
         

@@ -1,35 +1,10 @@
-const express = require("express")
-const cors = require('cors')
-const {getNewUsers} = require('./searcher')
-const app = express()
-app.use(cors())
+require('dotenv').config()
+const http = require('http')
+const app = require('./app')
 
-const PORT = process.env.PORT || 4000;
+const server = http.createServer(app)
 
-app.get('/api/newusers', async (request, response) => {
-  try {
-    const userData = {
-      url: request.query.url,
-      email: request.query.email,
-      password: request.query.password,
-      auth: request.query.auth
-    }
-    console.log(userData);
-
-    const data = await getNewUsers(userData)
-
-    response.status(200).json({data})
-    
-  } catch (error) {
-      response.status(500).json('error')
-      console.log(error);
-  }
+const PORT = process.env.PORT || 4000
+server.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`)
 })
-
-app.get("/", (req, res) => {
-  res.send("Render Puppeteer server is up and running!")
-});
-
-app.listen(PORT, () => {
-  console.log(`Listening on port ${PORT}`)
-});

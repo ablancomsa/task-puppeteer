@@ -27,10 +27,10 @@ const getNewUsers = async (userData) => {
             ],
             executablePath:
                 process.env.NODE_ENV === "production"
-                    ? process.env.PUPPETEER_EXECUTABLE_PATH
-                    : puppeteer.executablePath(),
+                ? process.env.PUPPETEER_EXECUTABLE_PATH
+                : puppeteer.executablePath(),
         });
-        page = (await browser.pages())[0];
+        page = (await browser.newPage());
         
         await page.setUserAgent(header);
         await page.setViewport({ width: 1920, height: 1080 });

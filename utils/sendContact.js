@@ -26,7 +26,7 @@ const sendContact = async (userData, auth) => {
         : puppeteer.executablePath(),
     
   });
-  page = (await browser.pages())[0];
+  page = (await browser.newPage());
   await page.setUserAgent(header);
   await page.setViewport({ width: 1920, height: 1080 });
 

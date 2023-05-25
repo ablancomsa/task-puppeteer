@@ -36,61 +36,53 @@ const getNewUsers = async (userData) => {
         await page.setViewport({ width: 1920, height: 1080 });
 
         try {
-            if (authenticated === 'not authenticated') {
-                //Link iniciando en la página 6: https://www.linkedin.com/search/results/people/?currentCompany=%5B%223553043%22%5D&geoUrn=%5B%22104621616%22%5D&heroEntityKey=urn%3Ali%3Aautocomplete%3A-209490089&keywords=enel%20green%20power&origin=FACETED_SEARCH&page=6&position=0&searchId=a0646d7b-0acc-4112-b419-0cf6b0fee8c0&sid=8lc
-                await page.goto(`${userData.url}`, { waitUntil: 'load' });
-    
-                console.log('Visitando pagina ==> linkedin');
-    
-                await page.waitForTimeout(3000);
-                await page.waitForSelector('.main__sign-in-link')
-                await page.click('.main__sign-in-link');
-    
-                await page.waitForTimeout(3000);
-                // await page.screenshot({ path: 'src/linkedin/screenshot.png' });
-                await page.waitForSelector('.login__form_action_container');
-                console.log('Ingresando a la página de login');
-                const username = await page.$('#username');
-                const password = await page.$('#password');
-    
-                // Login with username and password
-    
-                await username.type(userData.email);
-                await password.type(userData.password);
-    
-                // Click login btn
-                await page.waitForSelector('.login__form_action_container');
-                console.log('Click login btn');
-                
-                await page.click('.login__form_action_container button');
-                await page.waitForTimeout(3000);
-                // await page.screenshot({ path: 'src/linkedin/screenshot3.png' });
-                await page.waitForSelector('.reusable-search__result-container');
-    
-                const cookies = await page.cookies();
-                const cookieJson = JSON.stringify(cookies)
-                    // // And save this data to a JSON file
-                fs.writeFileSync('./utils/httpbin-cookies.json', cookieJson);
-                console.log('Cookies saved to httpbin-cookies.json', cookieJson);
-    
-            } else {
-                // Saved cookies reading
-                console.log('Load cookies reading')
-                const cookies = fs.readFileSync('./utils/httpbin-cookies.json', 'utf8');
-                console.log('loaded cookies reading')
-                const deserializedCookies = JSON.parse(cookies);
-                console.log('parsed cookies reading')
-                await page.setCookie(...deserializedCookies);
-                console.log('set cookie', deserializedCookies)
-    
-                await page.goto(`${userData.url}`);
-                console.log('goto cookies reading')
-    
-            }
+            // Saved cookies reading
+            console.log('Load cookies reading')
+            const cookies = fs.readFileSync('./utils/httpbin-cookies.json', 'utf8');
+            console.log('loaded cookies reading')
+            const deserializedCookies = JSON.parse(cookies);
+            console.log('parsed cookies reading')
+            await page.setCookie(...deserializedCookies);
+            console.log('set cookie', deserializedCookies)
+
+            await page.goto(`${userData.url}`);
+            console.log('goto cookies reading')
+            
         } catch (error) {
-            console.log('Log In')
-            console.log(error);
-            authenticated = 'not authenticated';
+            await page.goto(`${userData.url}`, { waitUntil: 'load' });
+    
+            console.log('Visitando pagina ==> linkedin');
+
+            await page.waitForTimeout(3000);
+            await page.waitForSelector('.main__sign-in-link')
+            await page.click('.main__sign-in-link');
+
+            await page.waitForTimeout(3000);
+            // await page.screenshot({ path: 'src/linkedin/screenshot.png' });
+            await page.waitForSelector('.login__form_action_container');
+            console.log('Ingresando a la página de login');
+            const username = await page.$('#username');
+            const password = await page.$('#password');
+
+            // Login with username and password
+
+            await username.type(userData.email);
+            await password.type(userData.password);
+
+            // Click login btn
+            await page.waitForSelector('.login__form_action_container');
+            console.log('Click login btn');
+            
+            await page.click('.login__form_action_container button');
+            await page.waitForTimeout(3000);
+            // await page.screenshot({ path: 'src/linkedin/screenshot3.png' });
+            await page.waitForSelector('.reusable-search__result-container');
+
+            const cookies = await page.cookies();
+            const cookieJson = JSON.stringify(cookies)
+                // // And save this data to a JSON file
+            fs.writeFileSync('./utils/httpbin-cookies.json', cookieJson);
+            console.log('Cookies saved to httpbin-cookies.json', cookieJson);
         }
         
         
@@ -184,8 +176,13 @@ const getNewUsers = async (userData) => {
 
         profile.company = await getWebData('.pv-text-details__right-panel .inline-show-more-text', page, 0);
         profile.university = await getWebData('.pv-text-details__right-panel .inline-show-more-text', page, 1);
-        await page.waitForSelector(`img[class="pv-top-card-profile-picture__image pv-top-card-profile-picture__image--show evi-image ember-view"]`)
-        profile.imgUrl = await page.$eval(`img[class="pv-top-card-profile-picture__image pv-top-card-profile-picture__image--show evi-image ember-view"]`, el => el.src)
+        try {
+            await page.waitForSelector(`img[class="pv-top-card-profile-picture__image pv-top-card-profile-picture__image--show evi-image ember-view"]`)
+            profile.imgUrl = await page.$eval(`img[class="pv-top-card-profile-picture__image pv-top-card-profile-picture__image--show evi-image ember-view"]`, el => el.src)
+        } catch (error) {
+            console.log(error)
+            profile.imgUrl = 'X';
+        }
 
         // Get Popup contact info
         await page.click('#top-card-text-details-contact-info');

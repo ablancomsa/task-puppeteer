@@ -2,7 +2,7 @@ const puppeteer = require('puppeteer');
 const randomUseragent = require('random-useragent');
 const fs = require('fs');
 
-const sendContact = async (userData, auth) => {
+const sendContact = async (userData, user = nu) => {
   let err;
   let page;
   
@@ -12,7 +12,7 @@ const sendContact = async (userData, auth) => {
   console.log(header)
   
   const browser = await puppeteer.launch({
-    headless: true,
+    headless: false,
     ignoreHTTPSErrors: true,
     args: [
       "--disable-setuid-sandbox",
@@ -31,39 +31,38 @@ const sendContact = async (userData, auth) => {
   await page.setViewport({ width: 1920, height: 1080 });
 
   try {
-    if (auth === 'not authenticated') {
-      console.log(auth)
-      await page.goto('https://www.linkedin.com/login');
-      await page.type('#username', userData.email);
-      await page.type('#password', userData.password);
-      await page.waitForTimeout(3000);
-      await page.click('button[data-litms-control-urn="login-submit"]');
-      await page.waitForTimeout(3000);
-      await page.goto(`https://${userData.linkedin}`);
+    console.log('entro en saved')
+    // Saved cookies reading
+    const cookies = fs.readFileSync('./utils/httpbin-cookies.json', 'utf8');
+    console.log('cookies: ', cookies)
+    const deserializedCookies = JSON.parse(cookies);
+    await page.setCookie(...deserializedCookies);
+    console.log('setCookies')
+    await page.goto(`https://${userData.linkedin}`);
+    console.log('goto')
 
-      await page.waitForTimeout(3000);
-      // Get cookies
-      const cookies = await page.cookies();
-      const cookieJson = JSON.stringify(cookies)
-      
-      // And save this data to a JSON file
-      fs.writeFileSync('./utils/httpbin-cookies.json', cookieJson);
-    }else{
-      console.log('entro en saved')
-      // Saved cookies reading
-      const cookies = fs.readFileSync('./utils/httpbin-cookies.json', 'utf8');
-      console.log('cookies: ', cookies)
-      const deserializedCookies = JSON.parse(cookies);
-      await page.setCookie(...deserializedCookies);
-      console.log('setCookies')
-      await page.goto(`https://${userData.linkedin}`);
-      console.log('goto')
-    
-    }
   }catch(error){
-    console.log('Log In')
+    console.log('entro en catch')
+    await page.goto('https://www.linkedin.com/login');
+    console.log('goto')
+    await page.waitForTimeout(3000);
+    await page.type('#username', 'user'); //Cambiar el metodo para las contraseñas
+    await page.type('#password', 'password');
+    await page.waitForTimeout(3000);
+    await page.click('button[data-litms-control-urn="login-submit"]');
+    console.log('click login')
+    await page.waitForTimeout(3000);
+    await page.goto(`https://${userData.linkedin}`);
+
+    await page.waitForTimeout(3000);
+    // Get cookies
+    console.log('getcookies')
+    const cookies = await page.cookies();
+    const cookieJson = JSON.stringify(cookies)
+    console.log('setCookies')
+    // And save this data to a JSON file
+    fs.writeFileSync('./utils/httpbin-cookies.json', cookieJson)
     console.log(error)
-    authenticated = 'not authenticated';
   }
   try{
 

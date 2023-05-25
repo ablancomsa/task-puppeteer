@@ -47,7 +47,7 @@ const sendContact = async (userData, auth) => {
       const cookieJson = JSON.stringify(cookies)
       
       // And save this data to a JSON file
-      fs.writeFileSync('httpbin-cookies.json', cookieJson);
+      fs.writeFileSync('./utils/httpbin-cookies.json', cookieJson);
     }else{
       console.log('entro en saved')
       // Saved cookies reading

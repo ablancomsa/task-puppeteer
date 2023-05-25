@@ -70,21 +70,26 @@ const getNewUsers = async (userData) => {
                 const cookies = await page.cookies();
                 const cookieJson = JSON.stringify(cookies)
                     // // And save this data to a JSON file
-                fs.writeFileSync('httpbin-cookies.json', cookieJson);
+                fs.writeFileSync('./utils/httpbin-cookies.json', cookieJson);
                 console.log('Cookies saved to httpbin-cookies.json', cookieJson);
     
             } else {
                 // Saved cookies reading
-                const cookies = fs.readFileSync('httpbin-cookies.json', 'utf8');
+                console.log('Load cookies reading')
+                const cookies = fs.readFileSync('./utils/httpbin-cookies.json', 'utf8');
+                console.log('loaded cookies reading')
                 const deserializedCookies = JSON.parse(cookies);
+                console.log('parsed cookies reading')
                 await page.setCookie(...deserializedCookies);
                 console.log('set cookie', deserializedCookies)
     
                 await page.goto(`${userData.url}`);
+                console.log('goto cookies reading')
     
             }
         } catch (error) {
             console.log('Log In')
+            console.log(error);
             authenticated = 'not authenticated';
         }
         

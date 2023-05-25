@@ -26,7 +26,7 @@ const sendContact = async (userData, auth) => {
         : puppeteer.executablePath(),
     
   });
-  page = (await browser.newPage());
+  page = (await browser.pages())[0];
   await page.setUserAgent(header);
   await page.setViewport({ width: 1920, height: 1080 });
 
@@ -55,7 +55,7 @@ const sendContact = async (userData, auth) => {
       await page.setCookie(...deserializedCookies);
       console.log('setCookies')
       console.log(userData.linkedin)
-      await page.goto(`https://${userData.linkedin}`);
+      await page.goto(`https://${userData.linkedin}`, { timeout: 60000 });
       console.log('goto')
     
     }

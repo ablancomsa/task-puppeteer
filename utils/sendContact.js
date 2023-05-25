@@ -31,38 +31,32 @@ const sendContact = async (userData, auth) => {
   await page.setViewport({ width: 1920, height: 1080 });
 
   try {
-    if (auth === 'not authenticated') {
-      console.log(auth)
-      await page.goto('https://www.linkedin.com/login');
-      await page.type('#username', userData.email);
-      await page.type('#password', userData.password);
-      await page.waitForTimeout(3000);
-      await page.click('button[data-litms-control-urn="login-submit"]');
-      await page.waitForTimeout(3000);
-      await page.goto(`https://${userData.linkedin}`);
 
-      await page.waitForTimeout(3000);
-      // Get cookies
-      const cookies = await page.cookies();
-      const cookieJson = JSON.stringify(cookies)
-      
-      // And save this data to a JSON file
-      fs.writeFileSync('httpbin-cookies.json', cookieJson);
-    }else{
-      // Saved cookies reading
-      const cookies = fs.readFileSync('./utils/httpbin-cookies.json', 'utf8');
-      const deserializedCookies = JSON.parse(cookies);
-      await page.setCookie(...deserializedCookies);
-      console.log('setCookies')
-      console.log(userData.linkedin)
-      await page.goto(`https://${userData.linkedin}`, { waitUntil: 'load' });
-      console.log('goto')
+    // Saved cookies reading
+    const cookies = fs.readFileSync('./utils/httpbin-cookies.json', 'utf8');
+    const deserializedCookies = JSON.parse(cookies);
+    await page.setCookie(...deserializedCookies);
+    console.log('setCookies')
+    console.log(userData.linkedin)
+    await page.goto(`https://${userData.linkedin}`, { waitUntil: 'load' });
+    console.log('goto')
     
-    }
   }catch(error){
-    console.log('Log In')
-    console.log(error)
-    authenticated = 'not authenticated';
+    await page.goto('https://www.linkedin.com/login');
+    await page.type('#username', userData.email);
+    await page.type('#password', userData.password);
+    await page.waitForTimeout(3000);
+    await page.click('button[data-litms-control-urn="login-submit"]');
+    await page.waitForTimeout(3000);
+    await page.goto(`https://${userData.linkedin}`);
+
+    await page.waitForTimeout(3000);
+    // Get cookies
+    const cookies = await page.cookies();
+    const cookieJson = JSON.stringify(cookies)
+    
+    // And save this data to a JSON file
+    fs.writeFileSync('httpbin-cookies.json', cookieJson);
   }
   try{
     console.log('Contact')

@@ -30,34 +30,21 @@ const sendContact = async (userData, auth) => {
   await page.setUserAgent(header);
   await page.setViewport({ width: 1920, height: 1080 });
 
-  try {
+  // try {
 
-    // Saved cookies reading
-    const cookies = fs.readFileSync('./utils/httpbin-cookies.json', 'utf8');
-    const deserializedCookies = JSON.parse(cookies);
-    await page.setCookie(...deserializedCookies);
-    console.log('setCookies')
-    console.log(userData.linkedin)
-    await page.goto(`https://${userData.linkedin}`, { waitUntil: 'load' });
-    console.log('goto')
-    
-  }catch(error){
-    await page.goto('https://www.linkedin.com/login');
-    await page.type('#username', userData.email);
-    await page.type('#password', userData.password);
-    await page.waitForTimeout(3000);
-    await page.click('button[data-litms-control-urn="login-submit"]');
-    await page.waitForTimeout(3000);
-    await page.goto(`https://${userData.linkedin}`);
+  //   // Saved cookies reading
+  //   const cookies = fs.readFileSync('./utils/httpbin-cookies.json', 'utf8');
+  //   const deserializedCookies = JSON.parse(cookies);
+  //   await page.setCookie(...deserializedCookies);
+  //   console.log('setCookies')
+  //   console.log(userData.linkedin)
+  //   await page.goto(`https://${userData.linkedin}`, { waitUntil: 'load' });
+  //   console.log('goto')
 
-    await page.waitForTimeout(3000);
-    // Get cookies
-    const cookies = await page.cookies();
-    const cookieJson = JSON.stringify(cookies)
+  // }catch(error){
     
-    // And save this data to a JSON file
-    fs.writeFileSync('httpbin-cookies.json', cookieJson);
-  }
+  // }
+
   try{
     console.log('Contact')
     await page.waitForSelector(`.pv-top-card-v2-contact-info`);

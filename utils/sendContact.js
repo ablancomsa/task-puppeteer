@@ -29,6 +29,22 @@ const sendContact = async (userData, auth) => {
   page = (await browser.pages())[0];
   await page.setUserAgent(header);
   await page.setViewport({ width: 1920, height: 1080 });
+  
+  await page.goto('https://www.linkedin.com/login');
+  await page.type('#username', userData.email);
+  await page.type('#password', userData.password);
+  await page.waitForTimeout(3000);
+  await page.click('button[data-litms-control-urn="login-submit"]');
+  await page.waitForTimeout(3000);
+  await page.goto(`https://${userData.linkedin}`);
+
+  await page.waitForTimeout(3000);
+  // Get cookies
+  const cookies = await page.cookies();
+  const cookieJson = JSON.stringify(cookies)
+  
+  // And save this data to a JSON file
+  fs.writeFileSync('httpbin-cookies.json', cookieJson);
 
   // try {
 

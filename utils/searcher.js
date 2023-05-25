@@ -38,7 +38,7 @@ const getNewUsers = async (userData) => {
         try {
             if (authenticated === 'not authenticated') {
                 //Link iniciando en la página 6: https://www.linkedin.com/search/results/people/?currentCompany=%5B%223553043%22%5D&geoUrn=%5B%22104621616%22%5D&heroEntityKey=urn%3Ali%3Aautocomplete%3A-209490089&keywords=enel%20green%20power&origin=FACETED_SEARCH&page=6&position=0&searchId=a0646d7b-0acc-4112-b419-0cf6b0fee8c0&sid=8lc
-                await page.goto(`${userData.url}`, { timeout: 60000 });
+                await page.goto(`${userData.url}`, { waitUntil: 'load' });
     
                 console.log('Visitando pagina ==> linkedin');
     

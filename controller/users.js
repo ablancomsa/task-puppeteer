@@ -30,6 +30,7 @@ userRouter.get('/scrape', async (request, response) => {
 userRouter.post('/users/:id', async (request, response) => {
   const id = request.params.id;
   const auth = request.query.auth;
+  const user = request.body;
   const person = await User.findById(id);
   
 
@@ -51,15 +52,19 @@ userRouter.post('/users/:id', async (request, response) => {
   }
 
   try {
-    const send = await sendContact(person, auth);
-    if (send) {
+    const send = await sendContact(person, auth, user);
+
+    if (send !== null) {
+      response.json('Error authentication');
+    } else {
       await User.findByIdAndUpdate(request.params.id, {$set: newUserToAdd}, {new: true});
       response.status(200).json(newUserToAdd);
     }
+    
   }
   catch (error) {
     console.log(error)
-   response.status(500).json({error});
+    response.status(500).json({error});
   }
 })
 

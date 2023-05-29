@@ -157,8 +157,8 @@ const getNewUsers = async (userData) => {
 
         const profile = {
             name: 'X',
-            description: 'X',
-            university: 'X',
+            description: [],
+            university: [],
             company: 'X',
             grade: 'X',
             role: 'X',
@@ -190,41 +190,71 @@ const getNewUsers = async (userData) => {
         await page.waitForTimeout(2000);
 
 
-        // Get role and experience info
+        // // Get role and experience info
+        // try {
+        //     const indexElement = 1; //1 = alejandro, 0 = fernando
+        //     // Obtener todos los elementos que coinciden con el selector (el + hace alusión al hermano próximo, como nextSibling)
+        //     const elements = await page.$$('.pvs-header__container + .pvs-list__outer-container');
+
+        //     const experienceInfo = await elements[indexElement].evaluate((node) => {
+        //         return node.innerText;
+        //     });
+        //     profile.role = experienceInfo;
+
+        // } catch (error) {
+        //     profile.role = 'xx';
+        //     console.log(error);
+        // }
+
+
+
+        // // Get University Info
+
+        // //TODO: Debuggear los selectores en el linkedin de alejandro, ya que no son los mismos que al ingresar en mi cuenta
+
+        // try {
+        //     const indexElement = 2; //2 = alejandro, 1 = fernando
+        //     // Obtener todos los elementos que coinciden con el selector
+        //     const elements = await page.$$('.pvs-header__container + .pvs-list__outer-container');
+
+        //     const universityInfo = await elements[indexElement].evaluate((node) => {
+        //         return node.innerText;
+        //     });
+        //     profile.university = universityInfo;
+
+        // } catch (error) {
+        //     console.log(error);
+        // }
+
+        // NOTE: Obtencion de la experiencia y los estudios de la persona
         try {
-            const indexElement = 1; //1 = alejandro, 0 = fernando
+            const indexRole = 0; //1 = alejandro, 0 = fernando
+            const indexUniveristy = 1;
+            const experiencie = []
+            const university = []
+  
+            // NOTE: Obtencion de la experiencia de la persona
             // Obtener todos los elementos que coinciden con el selector (el + hace alusión al hermano próximo, como nextSibling)
-            const elements = await page.$$('.pvs-header__container + .pvs-list__outer-container');
-
-            const experienceInfo = await elements[indexElement].evaluate((node) => {
-                return node.innerText;
-            });
-            profile.role = experienceInfo;
-
-        } catch (error) {
+            const elements = await page.$$('.pvs-header__container + .pvs-list__outer-container')
+            const experienceInfo = await elements[indexRole].$$('ul.pvs-list > li > div.pvs-entity')
+            for(const item of experienceInfo){
+              const newExperiencie = await item.$$eval(`span.visually-hidden`, el => el.map((node) => node.textContent))
+              experiencie.push({experiencie: newExperiencie});
+            }
+            profile.role = [...experiencie];
+  
+            //NOTE: Obtencion de las universidades en las que se ha estudiado
+            const universityInfo = await elements[indexUniveristy].$$('ul.pvs-list > li > div.pvs-entity')
+            for(const item of universityInfo){
+              const newUnivesity = await item.$$eval(`span.visually-hidden`, el => el.map((node) => node.textContent))
+              university.push({university: newUnivesity});
+            }
+            profile.university = [...university];
+  
+          } catch (error) {
             profile.role = 'xx';
             console.log(error);
-        }
-
-
-
-        // Get University Info
-
-        //TODO: Debuggear los selectores en el linkedin de alejandro, ya que no son los mismos que al ingresar en mi cuenta
-
-        try {
-            const indexElement = 2; //2 = alejandro, 1 = fernando
-            // Obtener todos los elementos que coinciden con el selector
-            const elements = await page.$$('.pvs-header__container + .pvs-list__outer-container');
-
-            const universityInfo = await elements[indexElement].evaluate((node) => {
-                return node.innerText;
-            });
-            profile.university = universityInfo;
-
-        } catch (error) {
-            console.log(error);
-        }
+          }
 
 
         try {

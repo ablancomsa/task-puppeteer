@@ -14,7 +14,7 @@ const getNewUsers = async (userData) => {
   let page;
 
   const searchUrl =
-    "https://www.linkedin.com/search/results/people/?currentCompany=%5B%22130695%22%5D&geoUrn=%5B%22104621616%22%5D&origin=FACETED_SEARCH&page=6&sid=q(q";
+    "https://www.linkedin.com/search/results/people/?currentCompany=%5B%223553043%22%2C%221086582%22%5D&origin=COMPANY_PAGE_CANNED_SEARCH&sid=0k(";
   const initialization = async () => {
     const header = randomUseragent.getRandom((ua) => {
       return ua.browserName === "Firefox";
@@ -139,7 +139,7 @@ const getNewUsers = async (userData) => {
       console.log("Click NEXT");
     };
 
-    while (pagination <= 5) {
+    while (pagination <= 1) {
       await getUrls();
       pagination++;
     }
@@ -216,9 +216,15 @@ const getNewUsers = async (userData) => {
       }
 
       // Get Popup contact info
-      await page.click("#top-card-text-details-contact-info");
-      await page.waitForSelector(".pv-contact-info__ci-container");
-      await page.waitForTimeout(randomizeTime());
+      try {
+        await page.waitForTimeout(randomizeTime())
+        await page.waitForSelector("#top-card-text-details-contact-info")
+        await page.click("#top-card-text-details-contact-info");
+        await page.waitForSelector(".pv-contact-info__ci-container");
+        await page.waitForTimeout(randomizeTime());
+      } catch (error) {
+        console.log(error);
+      }
 
       // NOTE: Obtencion de la experiencia y los estudios de la persona
       try {

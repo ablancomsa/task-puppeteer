@@ -5,7 +5,7 @@ const userRouter = require("./controller/users");
 const app = express();
 
 const mongoUrl =
-  "mongodb+srv://user_node_restapi:VdKjTvfIrW2Q76JL@clusterrestapi.2sbf2c0.mongodb.net/restApiDB";
+  "mongodb+srv://user_node_restapi:VdKjTvfIrW2Q76JL@clusterrestapi.2sbf2c0.mongodb.net/restApiDB-test?retryWrites=true&w=majority";
 mongoose.connect(mongoUrl);
 
 app.use(cors());

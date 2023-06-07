@@ -28,6 +28,7 @@ const userSchema = new mongoose.Schema({
   roleCategory: String,
   imgUrl: String,
   isContact: Boolean,
+  aceptedContact: Boolean,
 })
 
 userSchema.set('toJSON', {

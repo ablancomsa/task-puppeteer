@@ -1,11 +1,11 @@
 const puppeteer = require("puppeteer");
 const randomUseragent = require("random-useragent");
-const chromium = require("@sparticuz/chromium")
 const fs = require("fs");
 
 const sendContact = async (userData, auth, user) => {
   let err = null;
   let page;
+  console.log("user: ", user);
 
   const header = randomUseragent.getRandom((ua) => {
     return ua.browserName === "Firefox";
@@ -13,10 +13,18 @@ const sendContact = async (userData, auth, user) => {
   console.log(header);
 
   const browser = await puppeteer.launch({
-    headless: chromium.headless,
+    headless: false,
     ignoreHTTPSErrors: true,
-    args: chromium.args,
-    executablePath: await chromium.executablePath(),
+    args: [
+      "--disable-setuid-sandbox",
+      "--no-sandbox",
+      "--single-process",
+      "--no-zygote",
+    ],
+    executablePath:
+      process.env.NODE_ENV === "production"
+        ? process.env.PUPPETEER_EXECUTABLE_PATH
+        : puppeteer.executablePath(),
   });
   page = (await browser.pages())[0];
   await page.setUserAgent(header);
@@ -31,22 +39,21 @@ const sendContact = async (userData, auth, user) => {
     await page.waitForTimeout(3000);
     await page.click('button[data-litms-control-urn="login-submit"]');
     await page.waitForTimeout(3000);
-    console.log(`https://www.${userData.linkedin}`);
-    await page.goto(`https://www.${userData.linkedin}`);
+    await page.goto(`https://${userData.linkedin}`);
+
     await page.waitForTimeout(3000);
     // Get cookies
-    const cookies = await page.cookies();
-    const cookieJson = JSON.stringify(cookies);
-    // And save this data to a JSON file
-    fs.writeFileSync("./utils/httpbin-cookies.json", cookieJson);
+    // const cookies = await page.cookies();
+    // const cookieJson = JSON.stringify(cookies);
+    // // And save this data to a JSON file
+    // fs.writeFileSync("./utils/httpbin-cookies.json", cookieJson);
   } else {
     try {
       // Saved cookies reading
       const cookies = fs.readFileSync("./utils/httpbin-cookies.json", "utf8");
       const deserializedCookies = JSON.parse(cookies);
       await page.setCookie(...deserializedCookies);
-      console.log(`https://www.${userData.linkedin}`);
-      await page.goto(`https://www.${userData.linkedin}`);
+      await page.goto(`https://${userData.linkedin}`);
     } catch (error) {
       console.log(error);
       await browser.close();

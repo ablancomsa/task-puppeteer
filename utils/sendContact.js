@@ -31,8 +31,8 @@ const sendContact = async (userData, auth, user) => {
     await page.waitForTimeout(3000);
     await page.click('button[data-litms-control-urn="login-submit"]');
     await page.waitForTimeout(3000);
-    await page.goto(`https://${userData.linkedin}`);
-    console.log(`https://${userData.linkedin}`);
+    console.log(`https://www.${userData.linkedin}`);
+    await page.goto(`https://www.${userData.linkedin}`);
     await page.waitForTimeout(3000);
     // Get cookies
     const cookies = await page.cookies();
@@ -45,8 +45,8 @@ const sendContact = async (userData, auth, user) => {
       const cookies = fs.readFileSync("./utils/httpbin-cookies.json", "utf8");
       const deserializedCookies = JSON.parse(cookies);
       await page.setCookie(...deserializedCookies);
-      await page.goto(`https://${userData.linkedin}`);
-      console.log(`https://${userData.linkedin}`);
+      console.log(`https://www.${userData.linkedin}`);
+      await page.goto(`https://www.${userData.linkedin}`);
     } catch (error) {
       console.log(error);
       await browser.close();

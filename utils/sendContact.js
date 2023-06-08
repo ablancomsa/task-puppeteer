@@ -6,7 +6,6 @@ const fs = require("fs");
 const sendContact = async (userData, auth, user) => {
   let err = null;
   let page;
-  console.log("user: ", user);
 
   const header = randomUseragent.getRandom((ua) => {
     return ua.browserName === "Firefox";
@@ -24,36 +23,51 @@ const sendContact = async (userData, auth, user) => {
   await page.setUserAgent(header);
   await page.setViewport({ width: 1920, height: 1080 });
 
-  if (user.email !== null) {
-    console.log("entro a login");
-    await page.goto("https://www.linkedin.com/login");
-    await page.waitForTimeout(3000);
-    await page.type("#username", user.email); //Cambiar el metodo para las contraseñas
-    await page.type("#password", user.password);
-    await page.waitForTimeout(3000);
-    await page.click('button[data-litms-control-urn="login-submit"]');
-    await page.waitForTimeout(3000);
-    await page.goto(`https://${userData.linkedin}`);
+  // if (user.email !== null) {
+  //   console.log("entro a login");
+  //   await page.goto("https://www.linkedin.com/login");
+  //   await page.waitForTimeout(3000);
+  //   await page.type("#username", user.email); //Cambiar el metodo para las contraseñas
+  //   await page.type("#password", user.password);
+  //   await page.waitForTimeout(3000);
+  //   await page.click('button[data-litms-control-urn="login-submit"]');
+  //   await page.waitForTimeout(3000);
+  //   await page.goto(`https://${userData.linkedin}`);
 
-    await page.waitForTimeout(3000);
-    // Get cookies
-    // const cookies = await page.cookies();
-    // const cookieJson = JSON.stringify(cookies);
-    // // And save this data to a JSON file
-    // fs.writeFileSync("./utils/httpbin-cookies.json", cookieJson);
-  } else {
-    try {
-      // Saved cookies reading
-      const cookies = fs.readFileSync("./utils/httpbin-cookies.json", "utf8");
-      const deserializedCookies = JSON.parse(cookies);
-      await page.setCookie(...deserializedCookies);
-      await page.goto(`https://${userData.linkedin}`);
-    } catch (error) {
-      console.log(error);
-      await browser.close();
-      return (err = "Error cookies login");
-    }
-  }
+  //   await page.waitForTimeout(3000);
+  //   // Get cookies
+  //   // const cookies = await page.cookies();
+  //   // const cookieJson = JSON.stringify(cookies);
+  //   // // And save this data to a JSON file
+  //   // fs.writeFileSync("./utils/httpbin-cookies.json", cookieJson);
+  // } else {
+  //   try {
+  //     // Saved cookies reading
+  //     const cookies = fs.readFileSync("./utils/httpbin-cookies.json", "utf8");
+  //     const deserializedCookies = JSON.parse(cookies);
+  //     await page.setCookie(...deserializedCookies);
+  //     await page.goto(`https://${userData.linkedin}`);
+  //   } catch (error) {
+  //     console.log(error);
+  //     await browser.close();
+  //     return (err = "Error cookies login");
+  //   }
+  // }
+
+  console.log("entro a login");
+  await page.goto("https://www.linkedin.com/login");
+  await page.waitForTimeout(6000);
+  await page.type("#username", "msadeveloper@yahoo.com"); //Cambiar el metodo para las contraseñas
+  await page.type("#password", "proyectolinkedin");
+  console.log("puso usuario y contraseña");
+  await page.waitForTimeout(6000);
+  await page.click('button[data-litms-control-urn="login-submit"]');
+  await page.waitForTimeout(3000);
+  console.log(`https://www.${userData.linkedin}`);
+  await page.goto(`https://www.${userData.linkedin}`);
+  console.log(`ya fue`);
+
+  await page.waitForTimeout(3000);
 
   try {
     await page.waitForTimeout(2000);

@@ -1,5 +1,6 @@
 const puppeteer = require("puppeteer");
 const randomUseragent = require("random-useragent");
+const chromium = require("@sparticuz/chromium")
 const fs = require("fs");
 
 const sendContact = async (userData, auth, user) => {
@@ -13,19 +14,12 @@ const sendContact = async (userData, auth, user) => {
   console.log(header);
 
   const browser = await puppeteer.launch({
-    headless: false,
+    headless: chromium.headless,
+    args: chromium.args,
+    executablePath: await chromium.executablePath(),
     ignoreHTTPSErrors: true,
-    args: [
-      "--disable-setuid-sandbox",
-      "--no-sandbox",
-      "--single-process",
-      "--no-zygote",
-    ],
-    executablePath:
-      process.env.NODE_ENV === "production"
-        ? process.env.PUPPETEER_EXECUTABLE_PATH
-        : puppeteer.executablePath(),
   });
+
   page = (await browser.pages())[0];
   await page.setUserAgent(header);
   await page.setViewport({ width: 1920, height: 1080 });

@@ -11,14 +11,24 @@ const scrapeLogic = async (res) => {
   });
 
   const browser = await puppeteer.launch({
-    headless: chromium.headless,
-    args: chromium.args,
-    executablePath: await chromium.executablePath(),
+    headless: false,
     ignoreHTTPSErrors: true,
+    args: [
+      "--disable-setuid-sandbox",
+      "--no-sandbox",
+      "--single-process",
+      "--no-zygote",
+    ],
+    executablePath:
+      process.env.NODE_ENV === "production"
+        ? process.env.PUPPETEER_EXECUTABLE_PATH
+        : puppeteer.executablePath(),
   });
+
+  page = (await browser.pages())[0];
   try {
     console.log('start')
-    const page = await browser.newPage();
+    
     // await page.waitForSelector('body');
     // await page.setUserAgent(header);
     // Set screen size

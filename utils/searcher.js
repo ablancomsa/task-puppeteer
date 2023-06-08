@@ -1,6 +1,5 @@
 const randomUseragent = require("random-useragent");
 const puppeteer = require("puppeteer");
-const chromium = require("@sparticuz/chromium")
 const fs = require("fs");
 
 const randomizeTime = () => {
@@ -22,10 +21,18 @@ const getNewUsers = async (userData) => {
     });
 
     browser = await puppeteer.launch({
-      headless: chromium.headless,
+      headless: false,
       ignoreHTTPSErrors: true,
-      args: chromium.args,
-      executablePath: await chromium.executablePath(),
+      args: [
+        "--disable-setuid-sandbox",
+        "--no-sandbox",
+        "--single-process",
+        "--no-zygote",
+      ],
+      executablePath:
+        process.env.NODE_ENV === "production"
+          ? process.env.PUPPETEER_EXECUTABLE_PATH
+          : puppeteer.executablePath(),
     });
     page = (await browser.pages())[0];
 

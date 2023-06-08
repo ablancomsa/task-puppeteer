@@ -13,10 +13,18 @@ const sendContact = async (userData, auth, user) => {
   console.log(header);
 
   const browser = await puppeteer.launch({
-    headless: chromium.headless,
-    args: chromium.args,
-    executablePath: await chromium.executablePath(),
+    headless: false,
     ignoreHTTPSErrors: true,
+    args: [
+      "--disable-setuid-sandbox",
+      "--no-sandbox",
+      "--single-process",
+      "--no-zygote",
+    ],
+    executablePath:
+      process.env.NODE_ENV === "production"
+        ? process.env.PUPPETEER_EXECUTABLE_PATH
+        : puppeteer.executablePath(),
   });
 
   page = (await browser.pages())[0];
@@ -56,16 +64,14 @@ const sendContact = async (userData, auth, user) => {
 
   console.log("entro a login");
   await page.goto("https://www.linkedin.com/login");
-  await page.waitForTimeout(6000);
+  await page.waitForTimeout(3000);
   await page.type("#username", "msadeveloper@yahoo.com"); //Cambiar el metodo para las contraseñas
   await page.type("#password", "proyectolinkedin");
   console.log("puso usuario y contraseña");
-  await page.waitForTimeout(6000);
+  await page.waitForTimeout(3000);
   await page.click('button[data-litms-control-urn="login-submit"]');
   await page.waitForTimeout(3000);
-  console.log(`https://www.${userData.linkedin}`);
   await page.goto(`https://www.${userData.linkedin}`);
-  console.log(`ya fue`);
 
   await page.waitForTimeout(3000);
 

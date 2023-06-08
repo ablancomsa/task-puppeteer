@@ -11,7 +11,7 @@ const scrapeLogic = async (res) => {
   });
 
   const browser = await puppeteer.launch({
-    headless: false,
+    headless: true,
     ignoreHTTPSErrors: true,
     args: [
       "--disable-setuid-sandbox",

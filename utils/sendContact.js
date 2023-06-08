@@ -13,7 +13,7 @@ const sendContact = async (userData, auth, user) => {
   console.log(header);
 
   const browser = await puppeteer.launch({
-    headless: false,
+    headless: true,
     ignoreHTTPSErrors: true,
     args: [
       "--disable-setuid-sandbox",

@@ -1,5 +1,6 @@
 const puppeteer = require("puppeteer");
 const randomUseragent = require("random-useragent");
+const chromium = require("@sparticuz/chromium")
 const fs = require('fs');
 require("dotenv").config();
 
@@ -10,17 +11,10 @@ const scrapeLogic = async (res) => {
   });
 
   const browser = await puppeteer.launch({
-    headless: true,
-    args: [
-      "--disable-setuid-sandbox",
-      "--no-sandbox",
-      "--single-process",
-      "--no-zygote",
-    ],
-    executablePath:
-      process.env.NODE_ENV === "production"
-        ? process.env.PUPPETEER_EXECUTABLE_PATH
-        : puppeteer.executablePath(),
+    headless: chromium.headless,
+    args: chromium.args,
+    executablePath: await chromium.executablePath(),
+    ignoreHTTPSErrors: true,
   });
   try {
     console.log('start')

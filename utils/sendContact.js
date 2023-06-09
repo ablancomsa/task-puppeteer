@@ -3,6 +3,11 @@ const randomUseragent = require("random-useragent");
 const chromium = require("@sparticuz/chromium")
 const fs = require("fs");
 
+const randomizeTime = () => {
+  return Math.floor(Math.random() * 3000) + 800;
+};
+
+
 const sendContact = async (userData) => {
   let err = null;
   let page;
@@ -42,21 +47,21 @@ const sendContact = async (userData) => {
   } catch (error) {
     console.log("entro a login");
     await page.goto("https://www.linkedin.com/login");
-    await page.waitForTimeout(3200);
+    await page.waitForTimeout(randomizeTime());
     await page.click('#username')
-    await page.waitForTimeout(1360)
+    await page.waitForTimeout(randomizeTime())
     await page.type("#username", process.env.USER); //Cambiar el metodo para las contraseñas
-    await page.waitForTimeout(2430);
+    await page.waitForTimeout(randomizeTime());
     await page.click('#password')
-    await page.waitForTimeout(950)
+    await page.waitForTimeout(randomizeTime())
     await page.type("#password", process.env.PASSWORD);
     console.log("puso usuario y contraseña");
-    await page.waitForTimeout(1260);
+    await page.waitForTimeout(randomizeTime());
     await page.click('button[data-litms-control-urn="login-submit"]');
-    await page.waitForTimeout(3000);
+    await page.waitForTimeout(randomizeTime());
     await page.goto(`https://www.${userData.linkedin}`);
 
-    await page.waitForTimeout(3000);
+    await page.waitForTimeout(randomizeTime());
     // Get cookies
     const cookies = await page.cookies();
     const cookieJson = JSON.stringify(cookies);
@@ -65,10 +70,10 @@ const sendContact = async (userData) => {
   }
 
 
-  await page.waitForTimeout(3000);
+  await page.waitForTimeout(randomizeTime());
 
   try {
-    await page.waitForTimeout(2000);
+    await page.waitForTimeout(randomizeTime());
     await page.waitForSelector(`.pv-top-card-v2-ctas`);
     const div = await page.$eval(
       `.pv-top-card-v2-ctas >>>> button`,
@@ -76,7 +81,7 @@ const sendContact = async (userData) => {
     );
     console.log(div);
     await page.click(".pv-top-card-v2-ctas >>>> button");
-    await page.waitForTimeout(2000);
+    await page.waitForTimeout(randomizeTime());
     await page.waitForSelector("#artdeco-modal-outlet");
     console.log("Open Modal");
     const button = await page.$$eval(
@@ -85,7 +90,7 @@ const sendContact = async (userData) => {
     );
     console.log("Elemento a clickear: ", button);
     await page.click(`#artdeco-modal-outlet >>>> button`);
-    await page.waitForTimeout(2000);
+    await page.waitForTimeout(randomizeTime());
     await page.close();
 
     return (err = null);

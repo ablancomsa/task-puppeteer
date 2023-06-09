@@ -14,7 +14,7 @@ const getNewUsers = async (userData) => {
   let page;
 
   const searchUrl =
-    "https://www.linkedin.com/search/results/people/?currentCompany=%5B%223553043%22%2C%221086582%22%5D&origin=COMPANY_PAGE_CANNED_SEARCH&sid=0k(";
+    "https://www.linkedin.com/search/results/people/?currentCompany=%5B%22130695%22%5D&geoUrn=%5B%22104621616%22%5D&origin=FACETED_SEARCH&page=12&sid=wWx";
   const initialization = async () => {
     const header = randomUseragent.getRandom((ua) => {
       return ua.browserName === "Firefox";
@@ -139,7 +139,7 @@ const getNewUsers = async (userData) => {
       console.log("Click NEXT");
     };
 
-    while (pagination <= 1) {
+    while (pagination <= 2) {
       await getUrls();
       pagination++;
     }

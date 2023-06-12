@@ -9,7 +9,7 @@ const mongoUrl =
 mongoose.connect(mongoUrl);
 
 const corsOptions = {
-  origin: 'https://vercel.com/ablanco-msageoconsul/front-version-windows',
+  origin: 'https://vercel.com/ablanco-msageoconsul/front-version-windows.app',
   optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 }
 

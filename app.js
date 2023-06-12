@@ -8,7 +8,12 @@ const mongoUrl =
   "mongodb+srv://user_node_restapi:VdKjTvfIrW2Q76JL@clusterrestapi.2sbf2c0.mongodb.net/restApiDB-test?retryWrites=true&w=majority";
 mongoose.connect(mongoUrl);
 
-app.use(cors());
+const corsOptions = {
+  origin: 'https://vercel.com/ablanco-msageoconsul/front-version-windows',
+  optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+}
+
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use("/api", userRouter);
 

@@ -8,9 +8,18 @@ const mongoUrl =
   "mongodb+srv://user_node_restapi:VdKjTvfIrW2Q76JL@clusterrestapi.2sbf2c0.mongodb.net/restApiDB-test?retryWrites=true&w=majority";
 mongoose.connect(mongoUrl);
 
+const whiteList = [
+  "https://front-version-windows.vercel.app"
+]
+
 const corsOptions = {
-  origin: 'https://front-version-windows.vercel.app',
-  optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+  origin: function (origin, callback) {
+    if (whiteList.indexOf(origin) !== -1) {
+      callback(null, true)
+    } else {
+      callback(new Error("Not allowed by CORS"))
+    }
+  },
 }
 
 app.use(cors(corsOptions));

@@ -5,7 +5,7 @@ const userRouter = require("./controller/users");
 const app = express();
 
 const mongoUrl =
-  "mongodb+srv://user_node_restapi:VdKjTvfIrW2Q76JL@clusterrestapi.2sbf2c0.mongodb.net/restApiDB-test?retryWrites=true&w=majority";
+  "mongodb+srv://user_node_restapi:VdKjTvfIrW2Q76JL@clusterrestapi.2sbf2c0.mongodb.net/restApiDB";
 mongoose.connect(mongoUrl);
 
 const whiteList = [
@@ -22,7 +22,7 @@ const corsOptions = {
   },
 }
 
-app.use(cors(corsOptions));
+app.use(cors());
 app.use(express.json());
 app.use("/api", userRouter);
 

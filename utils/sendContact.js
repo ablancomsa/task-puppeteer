@@ -85,11 +85,12 @@ const sendContact = async (userData) => {
     await page.waitForSelector("#artdeco-modal-outlet");
     console.log("Open Modal");
     const button = await page.$$eval(
-      `#artdeco-modal-outlet >>>> button`,
-      (el) => el[0].outerHTML
+      `#artdeco-modal-outlet >>> button`,
+      (el) => el[2].outerHTML
     );
     console.log("Elemento a clickear: ", button);
-    await page.click(`#artdeco-modal-outlet >>>> button`);
+    await page.waitForSelector('#artdeco-modal-outlet >>> button[aria-label="Enviar ahora"]')
+    await page.click('#artdeco-modal-outlet >>> button[aria-label="Enviar ahora"]');
     await page.waitForTimeout(randomizeTime());
     await page.close();
 

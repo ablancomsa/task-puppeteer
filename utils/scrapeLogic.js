@@ -1,5 +1,6 @@
 const puppeteer = require("puppeteer");
 const randomUseragent = require("random-useragent");
+const chromium = require("@sparticuz/chromium")
 const fs = require('fs');
 require("dotenv").config();
 
@@ -11,6 +12,7 @@ const scrapeLogic = async (res) => {
 
   const browser = await puppeteer.launch({
     headless: true,
+    ignoreHTTPSErrors: true,
     args: [
       "--disable-setuid-sandbox",
       "--no-sandbox",
@@ -22,9 +24,11 @@ const scrapeLogic = async (res) => {
         ? process.env.PUPPETEER_EXECUTABLE_PATH
         : puppeteer.executablePath(),
   });
+
+  page = (await browser.pages())[0];
   try {
     console.log('start')
-    const page = await browser.newPage();
+    
     // await page.waitForSelector('body');
     // await page.setUserAgent(header);
     // Set screen size

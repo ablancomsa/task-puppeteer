@@ -1,6 +1,14 @@
 const uniqueValidator = require('mongoose-unique-validator');
 const mongoose = require('mongoose');
 
+const experiencieSchema = new mongoose.Schema({
+    experiencie: [String]
+})
+
+const universitySchema = new mongoose.Schema({
+  university: [String],
+})
+
 const userSchema = new mongoose.Schema({
   name: String,
   status: Boolean,
@@ -10,8 +18,8 @@ const userSchema = new mongoose.Schema({
   linkedin: String,
   twitter: String,
   website: String,
-  role: String,
-  university: String,
+  role: [experiencieSchema],
+  university: [universitySchema],
   company: String,
   companySimpleText: {
     type: mongoose.Schema.Types.ObjectId,
@@ -20,6 +28,7 @@ const userSchema = new mongoose.Schema({
   roleCategory: String,
   imgUrl: String,
   isContact: Boolean,
+  aceptedContact: Boolean,
 })
 
 userSchema.set('toJSON', {

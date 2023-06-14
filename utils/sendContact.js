@@ -1,18 +1,24 @@
-const puppeteer = require('puppeteer');
-const randomUseragent = require('random-useragent');
-const fs = require('fs');
+const puppeteer = require("puppeteer");
+const randomUseragent = require("random-useragent");
+const chromium = require("@sparticuz/chromium")
+const fs = require("fs");
 
-const sendContact = async (userData, user = nu) => {
-  let err;
+const randomizeTime = () => {
+  return Math.floor(Math.random() * 3000) + 800;
+};
+
+
+const sendContact = async (userData) => {
+  let err = null;
   let page;
-  
+
   const header = randomUseragent.getRandom((ua) => {
-    return ua.browserName === 'Firefox';
+    return ua.browserName === "Firefox";
   });
-  console.log(header)
-  
+  console.log(header);
+
   const browser = await puppeteer.launch({
-    headless: false,
+    headless: true,
     ignoreHTTPSErrors: true,
     args: [
       "--disable-setuid-sandbox",
@@ -24,68 +30,73 @@ const sendContact = async (userData, user = nu) => {
       process.env.NODE_ENV === "production"
         ? process.env.PUPPETEER_EXECUTABLE_PATH
         : puppeteer.executablePath(),
-    
   });
+
   page = (await browser.pages())[0];
   await page.setUserAgent(header);
   await page.setViewport({ width: 1920, height: 1080 });
 
+
   try {
-    console.log('entro en saved')
     // Saved cookies reading
-    const cookies = fs.readFileSync('./utils/httpbin-cookies.json', 'utf8');
-    console.log('cookies: ', cookies)
+    console.log('entro a cookies')
+    const cookies = fs.readFileSync("./utils/httpbin-cookies.json", "utf8");
     const deserializedCookies = JSON.parse(cookies);
     await page.setCookie(...deserializedCookies);
-    console.log('setCookies')
     await page.goto(`https://${userData.linkedin}`);
-    console.log('goto')
-
-  }catch(error){
-    console.log('entro en catch')
-    await page.goto('https://www.linkedin.com/login');
-    console.log('goto')
-    await page.waitForTimeout(3000);
-    await page.type('#username', 'user'); //Cambiar el metodo para las contraseñas
-    await page.type('#password', 'password');
-    await page.waitForTimeout(3000);
+  } catch (error) {
+    console.log("entro a login");
+    await page.goto("https://www.linkedin.com/login");
+    await page.waitForTimeout(randomizeTime());
+    await page.click('#username')
+    await page.waitForTimeout(randomizeTime())
+    await page.type("#username", process.env.USER); //Cambiar el metodo para las contraseñas
+    await page.waitForTimeout(randomizeTime());
+    await page.click('#password')
+    await page.waitForTimeout(randomizeTime())
+    await page.type("#password", process.env.PASSWORD);
+    console.log("puso usuario y contraseña");
+    await page.waitForTimeout(randomizeTime());
     await page.click('button[data-litms-control-urn="login-submit"]');
-    console.log('click login')
-    await page.waitForTimeout(3000);
-    await page.goto(`https://${userData.linkedin}`);
+    await page.waitForTimeout(randomizeTime());
+    await page.goto(`https://www.${userData.linkedin}`);
 
-    await page.waitForTimeout(3000);
+    await page.waitForTimeout(randomizeTime());
     // Get cookies
-    console.log('getcookies')
     const cookies = await page.cookies();
-    const cookieJson = JSON.stringify(cookies)
-    console.log('setCookies')
+    const cookieJson = JSON.stringify(cookies);
     // And save this data to a JSON file
-    fs.writeFileSync('./utils/httpbin-cookies.json', cookieJson)
-    console.log(error)
+    fs.writeFileSync("./utils/httpbin-cookies.json", cookieJson);
   }
-  try{
 
-    await page.waitForTimeout(2000);
+
+  await page.waitForTimeout(randomizeTime());
+
+  try {
+    await page.waitForTimeout(randomizeTime());
     await page.waitForSelector(`.pv-top-card-v2-ctas`);
-    const div = await page.$eval(`.pv-top-card-v2-ctas >>>> button`, el => el.innerText);
-    console.log(div)
+    const div = await page.$eval(
+      `.pv-top-card-v2-ctas >>>> button`,
+      (el) => el.innerText
+    );
+    console.log(div);
     await page.click(".pv-top-card-v2-ctas >>>> button");
-    await page.waitForTimeout(2000);
-    await page.waitForSelector('#artdeco-modal-outlet')
-    console.log('Open Modal')
-    const button = await page.$$eval(`#artdeco-modal-outlet >>>> button`, el => el[0].outerHTML);
-    console.log('Elemento a clickear: ',button)
+    await page.waitForTimeout(randomizeTime());
+    await page.waitForSelector("#artdeco-modal-outlet");
+    console.log("Open Modal");
+    const button = await page.$$eval(
+      `#artdeco-modal-outlet >>>> button`,
+      (el) => el[0].outerHTML
+    );
+    console.log("Elemento a clickear: ", button);
     await page.click(`#artdeco-modal-outlet >>>> button`);
-    await page.waitForTimeout(2000);
-    await page.close()
-  
-    return true
-  } catch(error){
-    err = true
-    console.log(error)
-    return false
-  }
+    await page.waitForTimeout(randomizeTime());
+    await page.close();
 
-}
-module.exports = {sendContact};
+    return (err = null);
+  } catch (error) {
+    console.log(error);
+    return (err = "Error get data");
+  }
+};
+module.exports = { sendContact };

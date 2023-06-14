@@ -2,9 +2,31 @@ const randomUseragent = require("random-useragent");
 const puppeteer = require("puppeteer");
 const fs = require("fs");
 
+const scrollDirection = {
+  down: "down",
+  up: "up",
+}
+
 const randomizeTime = () => {
   return Math.floor(Math.random() * 4000) + 2000;
 };
+
+const randomizeDistance = (pixels = 100) => {
+  return Math.floor(Math.random() * 50) + pixels;
+}
+
+const scrollView = async (distance, direction) => {
+  if (direction === scrollDirection.up) {
+    await page.evaluate(() => {
+      window.scrollBy(0, -distance);
+    });
+  } 
+  else if (direction === scrollDirection.down) {
+    await page.evaluate(() => {
+      window.scrollBy(0, distance);
+    });
+  }
+}
 
 const getNewUsers = async (userData) => {
   let browser;
@@ -215,26 +237,17 @@ const getNewUsers = async (userData) => {
         profile.imgUrl = "X";
       }
 
-      // Get Popup contact info
-      try {
-        await page.waitForTimeout(randomizeTime())
-        await page.waitForSelector("#top-card-text-details-contact-info")
-        await page.click("#top-card-text-details-contact-info");
-        await page.waitForSelector(".pv-contact-info__ci-container");
-        await page.waitForTimeout(randomizeTime());
-      } catch (error) {
-        console.log(error);
-      }
-
       // NOTE: Obtencion de la experiencia y los estudios de la persona
       try {
         const indexRole = 0; //1 = alejandro, 0 = fernando
         const indexUniveristy = 1;
         const experiencie = [];
         const university = [];
-
+        
         // NOTE: Obtencion de la experiencia de la persona
         // Obtener todos los elementos que coinciden con el selector (el + hace alusión al hermano próximo, como nextSibling)
+        scrollView(randomizeDistance(400), scrollDirection.down)
+        await page.waitForTimeout(randomizeTime())
         const elements = await page.$$(
           ".pvs-header__container + .pvs-list__outer-container"
         );
@@ -250,7 +263,10 @@ const getNewUsers = async (userData) => {
         }
         profile.role = [...experiencie];
 
+        
         //NOTE: Obtencion de las universidades en las que se ha estudiado
+        scrollView(randomizeDistance(200), scrollDirection.down)
+        await page.waitForTimeout(randomizeTime())
         const universityInfo = await elements[indexUniveristy].$$(
           "ul.pvs-list > li > div.pvs-entity"
         );
@@ -263,6 +279,18 @@ const getNewUsers = async (userData) => {
         profile.university = [...university];
       } catch (error) {
         profile.role = "xx";
+        console.log(error);
+      }
+
+      // Get Popup contact info
+      try {
+        scrollDirection(randomizeDistance(500), scrollDirection.up)
+        await page.waitForTimeout(randomizeTime())
+        await page.waitForSelector("#top-card-text-details-contact-info")
+        await page.click("#top-card-text-details-contact-info");
+        await page.waitForSelector(".pv-contact-info__ci-container");
+        await page.waitForTimeout(randomizeTime());
+      } catch (error) {
         console.log(error);
       }
 
@@ -296,6 +324,8 @@ const getNewUsers = async (userData) => {
       }
 
       data = [...data, profile];
+      await page.waitForTimeout(randomizeTime());
+      await page.goBack()
     }
     await browser.close();
   };

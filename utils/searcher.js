@@ -9,8 +9,8 @@ const scrollDirection = {
   up: "up",
 };
 
-const randomizeTime = () => {
-  return Math.floor(Math.random() * 4000) + 2000;
+const randomizeTime = (minimalTime = 2000) => {
+  return Math.floor(Math.random() * 4000) + minimalTime;
 };
 
 const getNewUsers = async (userData) => {
@@ -20,7 +20,7 @@ const getNewUsers = async (userData) => {
   let authenticated = userData.auth;
 
   const searchUrl =
-    "https://www.linkedin.com/search/results/people/?currentCompany=%5B%221028370%22%5D&geoUrn=%5B%22104621616%22%5D&origin=FACETED_SEARCH&page=2&sid=%3AHH";
+    "https://www.linkedin.com/search/results/people/?currentCompany=%5B%22130695%22%5D&origin=COMPANY_PAGE_CANNED_SEARCH&page=28&sid=HgG";
   const initialization = async () => {
     const header = randomUseragent.getRandom((ua) => {
       return ua.browserName === "Firefox";
@@ -145,7 +145,7 @@ const getNewUsers = async (userData) => {
       console.log("Click NEXT");
     };
 
-    while (pagination <= 1) {
+    while (pagination <= 2) {
       await getUrls();
       pagination++;
     }
@@ -230,7 +230,7 @@ const getNewUsers = async (userData) => {
 
         // NOTE: Obtencion de la experiencia de la persona
         // Obtener todos los elementos que coinciden con el selector (el + hace alusión al hermano próximo, como nextSibling)
-        await page.waitForTimeout(randomizeTime());
+        await page.waitForTimeout(randomizeTime(4000));
         const elements = await page.$$(
           ".pvs-header__container + .pvs-list__outer-container"
         );
@@ -252,7 +252,7 @@ const getNewUsers = async (userData) => {
         profile.role = [...experiencie];
 
         //NOTE: Obtencion de las universidades en las que se ha estudiado
-        await page.waitForTimeout(randomizeTime());
+        await page.waitForTimeout(randomizeTime(3500));
         const universityInfo = await elements[indexUniveristy].$$(
           "ul.pvs-list > li > div.pvs-entity"
         );

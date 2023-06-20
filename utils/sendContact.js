@@ -1,12 +1,11 @@
 const puppeteer = require("puppeteer");
 const randomUseragent = require("random-useragent");
-const chromium = require("@sparticuz/chromium")
+const { setRedisCookies, getRedisCookies } = require("./setRedisCookies");
 const fs = require("fs");
 
 const randomizeTime = () => {
   return Math.floor(Math.random() * 3000) + 800;
 };
-
 
 const sendContact = async (userData) => {
   let err = null;
@@ -18,7 +17,7 @@ const sendContact = async (userData) => {
   console.log(header);
 
   const browser = await puppeteer.launch({
-    headless: true,
+    headless: false,
     ignoreHTTPSErrors: true,
     args: [
       "--disable-setuid-sandbox",
@@ -36,24 +35,24 @@ const sendContact = async (userData) => {
   await page.setUserAgent(header);
   await page.setViewport({ width: 1920, height: 1080 });
 
-
   try {
     // Saved cookies reading
-    console.log('entro a cookies')
-    const cookies = fs.readFileSync("./utils/httpbin-cookies.json", "utf8");
+    console.log("entro a cookies");
+    const cookies = await getRedisCookies(process.env.USER);
     const deserializedCookies = JSON.parse(cookies);
+    console.log("deserializedCookies", deserializedCookies);
     await page.setCookie(...deserializedCookies);
     await page.goto(`https://${userData.linkedin}`);
   } catch (error) {
     console.log("entro a login");
     await page.goto("https://www.linkedin.com/login");
     await page.waitForTimeout(randomizeTime());
-    await page.click('#username')
-    await page.waitForTimeout(randomizeTime())
+    await page.click("#username");
+    await page.waitForTimeout(randomizeTime());
     await page.type("#username", process.env.USER); //Cambiar el metodo para las contraseñas
     await page.waitForTimeout(randomizeTime());
-    await page.click('#password')
-    await page.waitForTimeout(randomizeTime())
+    await page.click("#password");
+    await page.waitForTimeout(randomizeTime());
     await page.type("#password", process.env.PASSWORD);
     console.log("puso usuario y contraseña");
     await page.waitForTimeout(randomizeTime());
@@ -66,9 +65,9 @@ const sendContact = async (userData) => {
     const cookies = await page.cookies();
     const cookieJson = JSON.stringify(cookies);
     // And save this data to a JSON file
-    fs.writeFileSync("./utils/httpbin-cookies.json", cookieJson);
+    await setRedisCookies(process.env.USER, cookieJson);
+    console.log("Cookies guardadas");
   }
-
 
   await page.waitForTimeout(randomizeTime());
 
@@ -89,8 +88,12 @@ const sendContact = async (userData) => {
       (el) => el[2].outerHTML
     );
     console.log("Elemento a clickear: ", button);
-    await page.waitForSelector('#artdeco-modal-outlet >>> button[aria-label="Enviar ahora"]')
-    await page.click('#artdeco-modal-outlet >>> button[aria-label="Enviar ahora"]');
+    await page.waitForSelector(
+      '#artdeco-modal-outlet >>> button[aria-label="Enviar ahora"]'
+    );
+    await page.click(
+      '#artdeco-modal-outlet >>> button[aria-label="Enviar ahora"]'
+    );
     await page.waitForTimeout(randomizeTime());
     await page.close();
 

@@ -4,23 +4,20 @@ const mongoose = require("mongoose");
 const userRouter = require("./controller/users");
 const app = express();
 
-const mongoUrl =
-  "mongodb+srv://user_node_restapi:VdKjTvfIrW2Q76JL@clusterrestapi.2sbf2c0.mongodb.net/restApiDB";
+const mongoUrl = process.env.MONGO_URL_TEST;
 mongoose.connect(mongoUrl);
 
-const whiteList = [
-  "https://front-version-windows.vercel.app"
-]
+const whiteList = ["https://front-version-windows.vercel.app"];
 
 const corsOptions = {
   origin: function (origin, callback) {
     if (whiteList.indexOf(origin) !== -1) {
-      callback(null, true)
+      callback(null, true);
     } else {
-      callback(new Error("Not allowed by CORS"))
+      callback(new Error("Not allowed by CORS"));
     }
   },
-}
+};
 
 app.use(cors());
 app.use(express.json());

@@ -72,7 +72,6 @@ const sendContact = async (userData) => {
   await page.waitForTimeout(randomizeTime());
 
   try {
-    await page.waitForTimeout(randomizeTime());
     await page.waitForSelector(`.pv-top-card-v2-ctas`);
     const div = await page.$eval(
       `.pv-top-card-v2-ctas >>>> button`,

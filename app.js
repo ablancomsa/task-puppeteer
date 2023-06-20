@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 const userRouter = require("./controller/users");
 const app = express();
 
-const mongoUrl = process.env.MONGO_URL_TEST;
+const mongoUrl = process.env.MONGO_URL;
 mongoose.connect(mongoUrl);
 
 const whiteList = ["https://front-version-windows.vercel.app"];

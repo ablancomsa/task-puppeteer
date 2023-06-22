@@ -51,18 +51,24 @@ userRouter.put("/users/:id", async (request, response) => {
   };
 
   try {
-    console.log(person);
-    const send = await sendContact(person, auth, user);
-    if (send !== null) {
-      response.json("Error authentication");
-    } else {
-      await User.findByIdAndUpdate(
-          request.params.id,
-          { $set: newUserToAdd },
-          { new: true }
-        );
-        response.status(200).json(newUserToAdd);
-    }
+    await User.findByIdAndUpdate(
+      request.params.id,
+      { $set: newUserToAdd },
+      { new: true }
+    );
+    response.status(200).json(newUserToAdd);
+    // console.log(person);
+    // const send = await sendContact(person, auth, user);
+    // if (send !== null) {
+    //   response.json("Error authentication");
+    // } else {
+    //   await User.findByIdAndUpdate(
+    //       request.params.id,
+    //       { $set: newUserToAdd },
+    //       { new: true }
+    //     );
+    //     response.status(200).json(newUserToAdd);
+    // }
   } catch (error) {
     console.log(error);
     response.status(500).json({ error });
